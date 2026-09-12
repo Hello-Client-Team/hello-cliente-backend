@@ -1,0 +1,2166 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hello Cliente API",
+    "version": "1.0.0",
+    "description": "API REST MVC. JWT Bearer para recursos protegidos; refresh token em cookie HttpOnly rotativo. Cookie não substitui Bearer nas rotas de negócio. Operações de autenticação POST exigem Origin da allowlist. Acesso PostgreSQL via Prisma, sem Supabase Auth."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333/api/v1",
+      "description": "Local; configure a URL HTTPS da sua API em produção."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "refreshCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "hc_refresh"
+      }
+    },
+    "schemas": {
+      "ProjectInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Vendas",
+              "Agendamento",
+              "Estoque",
+              "Financeiro",
+              "Atendimento"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 5000
+          },
+          "productionUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "demoUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "title",
+          "category",
+          "description",
+          "productionUrl",
+          "demoUrl"
+        ],
+        "additionalProperties": false
+      },
+      "RegisterInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "whatsapp": {
+            "type": "string",
+            "pattern": "^\\+[1-9]\\d{7,14}$",
+            "example": "+5511999999999"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 12,
+            "description": "Máximo de 72 bytes UTF-8, validado pelo backend."
+          },
+          "businessName": {
+            "type": "string"
+          },
+          "businessSector": {
+            "type": "string"
+          },
+          "termsVersion": {
+            "type": "string",
+            "enum": [
+              "1.0"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "whatsapp",
+          "password",
+          "businessName",
+          "businessSector",
+          "termsVersion"
+        ],
+        "additionalProperties": false
+      },
+      "MerchantLogin": {
+        "type": "object",
+        "properties": {
+          "whatsapp": {
+            "type": "string",
+            "pattern": "^\\+[1-9]\\d{7,14}$",
+            "example": "+5511999999999"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        },
+        "required": [
+          "whatsapp",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "AdminLogin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "AdoptionInput": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "termsVersion": {
+            "type": "string",
+            "enum": [
+              "1.0"
+            ]
+          },
+          "acceptTerms": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "projectId",
+          "termsVersion",
+          "acceptTerms"
+        ],
+        "additionalProperties": false
+      },
+      "Confirmation": {
+        "type": "object",
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "confirm"
+        ],
+        "additionalProperties": false
+      },
+      "ModerationInput": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "justification": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Obrigatória para REJECTED."
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "additionalProperties": false
+      },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "businessName": {
+            "type": "string"
+          },
+          "businessSector": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "field",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "SessionResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string"
+              },
+              "expiresIn": {
+                "type": "integer",
+                "example": 900
+              },
+              "user": {
+                "type": "object",
+                "description": "Disponível no login/cadastro; não contém hashes."
+              }
+            },
+            "required": [
+              "accessToken",
+              "expiresIn"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "PageResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "page",
+              "limit"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "Success": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "DTO da operação. Nenhum hash de senha ou refresh token é retornado."
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "paths": {
+    "/auth/verifications": {
+      "post": {
+        "summary": "Verificação de WhatsApp desativada",
+        "deprecated": true,
+        "responses": {
+          "503": {
+            "description": "Verificação de WhatsApp desativada"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Cadastrar lojista com WhatsApp e senha, sem verificação",
+        "tags": [
+          "Autenticação"
+        ],
+        "description": "",
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Entrar como lojista",
+        "tags": [
+          "Autenticação"
+        ],
+        "description": "",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantLogin"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/admin/login": {
+      "post": {
+        "summary": "Entrar como administrador",
+        "tags": [
+          "Autenticação"
+        ],
+        "description": "",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLogin"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/password/reset": {
+      "post": {
+        "summary": "Recuperação de senha temporariamente indisponível",
+        "deprecated": true,
+        "responses": {
+          "503": {
+            "description": "Recuperação de senha temporariamente indisponível"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "Rotacionar sessão",
+        "tags": [
+          "Autenticação"
+        ],
+        "description": "Uso único do refresh token. Substitui cookie e invalida a sessão anterior. O frontend deve serializar chamadas concorrentes de refresh.",
+        "security": [
+          {
+            "refreshCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          }
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Encerrar sessão",
+        "tags": [
+          "Autenticação"
+        ],
+        "description": "",
+        "security": [
+          {
+            "refreshCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Sucesso"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          }
+        ]
+      }
+    },
+    "/auth/oauth/{provider}": {
+      "get": {
+        "summary": "Iniciar OAuth",
+        "tags": [
+          "Autenticação"
+        ],
+        "description": "Navegue para esta URL; não use fetch. Define cookie de state HttpOnly e redireciona ao provedor.",
+        "security": [],
+        "responses": {
+          "302": {
+            "description": "Sucesso"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "github",
+                "linkedin"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/auth/oauth/{provider}/callback": {
+      "get": {
+        "summary": "Concluir OAuth",
+        "tags": [
+          "Autenticação"
+        ],
+        "description": "Callback registrado no provedor. Valida state/cookie, cria sessão e redireciona ao frontend com oauth=success. Depois o frontend chama POST /auth/refresh com credentials: include.",
+        "security": [],
+        "responses": {
+          "302": {
+            "description": "Sucesso"
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "github",
+                "linkedin"
+              ]
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/projects": {
+      "get": {
+        "summary": "Consultar vitrine pública",
+        "tags": [
+          "Projetos"
+        ],
+        "description": "",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Vendas",
+                "Agendamento",
+                "Estoque",
+                "Financeiro",
+                "Atendimento"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "recent",
+                "name"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/projects/{id}": {
+      "get": {
+        "summary": "Detalhar projeto aprovado",
+        "tags": [
+          "Projetos"
+        ],
+        "description": "",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/users/me": {
+      "get": {
+        "summary": "Consultar perfil autenticado",
+        "tags": [
+          "Usuários"
+        ],
+        "description": "Perfil obrigatório: MERCHANT, DEVELOPER ou ADMIN. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Atualizar dados de perfil",
+        "tags": [
+          "Usuários"
+        ],
+        "description": "Perfil obrigatório: MERCHANT, DEVELOPER ou ADMIN. Não altera papel, e-mail, WhatsApp ou credenciais. Dados de negócio somente para lojistas.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/merchant/matches": {
+      "get": {
+        "summary": "Listar adoções e revogações do lojista",
+        "tags": [
+          "Adoções"
+        ],
+        "description": "Perfil obrigatório: MERCHANT. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Adotar projeto aprovado",
+        "tags": [
+          "Adoções"
+        ],
+        "description": "Perfil obrigatório: MERCHANT. Retorna match, redirectUrl e created. Repetição da adoção ativa retorna 200 e o Match existente. Não é um proxy do sistema externo.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Adoção ativa já existente; resposta idempotente."
+          },
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdoptionInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/merchant/matches/{id}/revoke": {
+      "post": {
+        "summary": "Revogar adoção e solicitar exclusão",
+        "tags": [
+          "Adoções"
+        ],
+        "description": "Perfil obrigatório: MERCHANT. Transação única: Match REVOKED, Revocation e OutboxEvent. Prazo de 48 horas desde a solicitação. Resposta não significa e-mail entregue.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Confirmation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/developer/projects": {
+      "get": {
+        "summary": "Listar projetos do desenvolvedor",
+        "tags": [
+          "Desenvolvedor"
+        ],
+        "description": "Perfil obrigatório: DEVELOPER. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Submeter projeto",
+        "tags": [
+          "Desenvolvedor"
+        ],
+        "description": "Perfil obrigatório: DEVELOPER. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/developer/projects/{id}": {
+      "put": {
+        "summary": "Editar projeto e retornar à análise",
+        "tags": [
+          "Desenvolvedor"
+        ],
+        "description": "Perfil obrigatório: DEVELOPER. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/developer/revocations": {
+      "get": {
+        "summary": "Listar solicitações de exclusão",
+        "tags": [
+          "Desenvolvedor"
+        ],
+        "description": "Perfil obrigatório: DEVELOPER. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/developer/revocations/{id}/declare": {
+      "post": {
+        "summary": "Declarar exclusão concluída",
+        "tags": [
+          "Desenvolvedor"
+        ],
+        "description": "Perfil obrigatório: DEVELOPER. Somente projetos do dev autenticado. Idempotente. Declaração não comprova inspeção do banco externo.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Confirmation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/projects": {
+      "get": {
+        "summary": "Consultar projetos de todos os status",
+        "tags": [
+          "Administração"
+        ],
+        "description": "Perfil obrigatório: ADMIN. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "SUSPENDED"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/admin/projects/{id}/moderation": {
+      "post": {
+        "summary": "Aprovar ou rejeitar projeto",
+        "tags": [
+          "Administração"
+        ],
+        "description": "Perfil obrigatório: ADMIN. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/projects/{id}/history": {
+      "get": {
+        "summary": "Consultar histórico de saúde e moderação",
+        "tags": [
+          "Administração"
+        ],
+        "description": "Perfil obrigatório: ADMIN. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/admin/operations": {
+      "get": {
+        "summary": "Consultar pendências operacionais",
+        "tags": [
+          "Administração"
+        ],
+        "description": "Perfil obrigatório: ADMIN. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Perfil ou origem não autorizado"
+          },
+          "409": {
+            "description": "Conflito, adoção pendente de exclusão ou concorrência"
+          },
+          "422": {
+            "description": "Falha de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de tentativas excedido"
+          },
+          "500": {
+            "description": "Erro interno, sem detalhes sensíveis"
+          },
+          "503": {
+            "description": "Integração/dependência indisponível"
+          }
+        }
+      }
+    },
+    "/auth/oauth/{provider}/link": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Vincular provedor ao desenvolvedor autenticado",
+        "description": "Retorna authorizationUrl para abrir no mesmo navegador. Exige Origin permitido. O callback preserva a sessao e retorna oauth=linked. Nao mescla contas.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "github",
+                "linkedin"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              },
+              "example": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "URL de autorizacao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "authorizationUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sessao ausente ou expirada"
+          },
+          "403": {
+            "description": "Origin recusado ou papel diferente de DEVELOPER"
+          },
+          "503": {
+            "description": "Provedor nao configurado"
+          }
+        }
+      }
+    }
+  }
+}
