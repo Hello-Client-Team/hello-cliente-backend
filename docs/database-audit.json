@@ -1,0 +1,1295 @@
+{
+  "checkedAt": "2026-09-11T01:15:49.566Z",
+  "readOnly": true,
+  "connections": {
+    "DATABASE_URL": {
+      "identity": {
+        "current_user": "hello_runtime",
+        "current_database": "postgres",
+        "rolsuper": false,
+        "rolcreatedb": false,
+        "rolcreaterole": false,
+        "rolbypassrls": false,
+        "rolinherit": true,
+        "schema_create": false
+      },
+      "structure": {
+        "tables": {
+          "expected": 11,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "columns": {
+          "expected": 97,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "constraints": {
+          "expected": 41,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "indexes": {
+          "expected": 33,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "enums": {
+          "expected": 25,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        }
+      },
+      "roles": [
+        {
+          "rolname": "hello_app",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "rolinherit": true
+        },
+        {
+          "rolname": "hello_runtime",
+          "rolcanlogin": true,
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "rolinherit": true
+        }
+      ],
+      "memberships": [
+        {
+          "member": "hello_runtime",
+          "granted_role": "hello_app",
+          "admin_option": false
+        }
+      ],
+      "owners": [
+        {
+          "tablename": "health_checks",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "matches",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "merchants",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "moderations",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "notification_attempts",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "oauth_accounts",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "outbox_events",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "projects",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "revocations",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "sessions",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "users",
+          "tableowner": "postgres"
+        }
+      ],
+      "policies": [
+        {
+          "tablename": "health_checks",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "matches",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "merchants",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "moderations",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "notification_attempts",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "oauth_accounts",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "outbox_events",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "projects",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "revocations",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "sessions",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "users",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        }
+      ],
+      "privileges": [
+        {
+          "rolname": "anon",
+          "table_name": "health_checks",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "matches",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "merchants",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "moderations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "notification_attempts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "oauth_accounts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "outbox_events",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "projects",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "revocations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "sessions",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "users",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "health_checks",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "matches",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "merchants",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "moderations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "notification_attempts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "oauth_accounts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "outbox_events",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "projects",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "revocations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "sessions",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "users",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "health_checks",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "matches",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "merchants",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "moderations",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "notification_attempts",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "oauth_accounts",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "outbox_events",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "projects",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "revocations",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "sessions",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "users",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        }
+      ],
+      "migrations": {
+        "errorCode": "42501"
+      },
+      "selectProbes": [
+        {
+          "table": "health_checks",
+          "ok": true
+        },
+        {
+          "table": "matches",
+          "ok": true
+        },
+        {
+          "table": "merchants",
+          "ok": true
+        },
+        {
+          "table": "moderations",
+          "ok": true
+        },
+        {
+          "table": "notification_attempts",
+          "ok": true
+        },
+        {
+          "table": "oauth_accounts",
+          "ok": true
+        },
+        {
+          "table": "outbox_events",
+          "ok": true
+        },
+        {
+          "table": "projects",
+          "ok": true
+        },
+        {
+          "table": "revocations",
+          "ok": true
+        },
+        {
+          "table": "sessions",
+          "ok": true
+        },
+        {
+          "table": "users",
+          "ok": true
+        }
+      ]
+    },
+    "DIRECT_URL": {
+      "identity": {
+        "current_user": "postgres",
+        "current_database": "postgres",
+        "rolsuper": false,
+        "rolcreatedb": true,
+        "rolcreaterole": true,
+        "rolbypassrls": true,
+        "rolinherit": true,
+        "schema_create": true
+      },
+      "structure": {
+        "tables": {
+          "expected": 11,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "columns": {
+          "expected": 97,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "constraints": {
+          "expected": 41,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "indexes": {
+          "expected": 33,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        },
+        "enums": {
+          "expected": 25,
+          "missingOrDifferent": [],
+          "extraOrDifferent": []
+        }
+      },
+      "roles": [
+        {
+          "rolname": "hello_app",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "rolinherit": true
+        },
+        {
+          "rolname": "hello_runtime",
+          "rolcanlogin": true,
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "rolinherit": true
+        }
+      ],
+      "memberships": [
+        {
+          "member": "postgres",
+          "granted_role": "pg_monitor",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "pg_signal_backend",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "pg_read_all_data",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "pg_create_subscription",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "anon",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "authenticated",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "service_role",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "authenticator",
+          "admin_option": true
+        },
+        {
+          "member": "postgres",
+          "granted_role": "supabase_privileged_role",
+          "admin_option": false
+        },
+        {
+          "member": "postgres",
+          "granted_role": "hello_app",
+          "admin_option": true
+        },
+        {
+          "member": "hello_runtime",
+          "granted_role": "hello_app",
+          "admin_option": false
+        },
+        {
+          "member": "postgres",
+          "granted_role": "hello_runtime",
+          "admin_option": true
+        }
+      ],
+      "owners": [
+        {
+          "tablename": "health_checks",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "matches",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "merchants",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "moderations",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "notification_attempts",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "oauth_accounts",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "outbox_events",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "projects",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "revocations",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "sessions",
+          "tableowner": "postgres"
+        },
+        {
+          "tablename": "users",
+          "tableowner": "postgres"
+        }
+      ],
+      "policies": [
+        {
+          "tablename": "health_checks",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "matches",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "merchants",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "moderations",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "notification_attempts",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "oauth_accounts",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "outbox_events",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "projects",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "revocations",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "sessions",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        },
+        {
+          "tablename": "users",
+          "policyname": "hello_api_access",
+          "permissive": "PERMISSIVE",
+          "roles": "{hello_app}",
+          "cmd": "ALL",
+          "qual": "true",
+          "with_check": "true"
+        }
+      ],
+      "privileges": [
+        {
+          "rolname": "anon",
+          "table_name": "health_checks",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "matches",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "merchants",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "moderations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "notification_attempts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "oauth_accounts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "outbox_events",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "projects",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "revocations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "sessions",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "anon",
+          "table_name": "users",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "health_checks",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "matches",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "merchants",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "moderations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "notification_attempts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "oauth_accounts",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "outbox_events",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "projects",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "revocations",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "sessions",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "authenticated",
+          "table_name": "users",
+          "select": false,
+          "insert": false,
+          "update": false,
+          "delete": false,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "health_checks",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "matches",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "merchants",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "moderations",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "notification_attempts",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "oauth_accounts",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "outbox_events",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "projects",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "revocations",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "sessions",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "hello_runtime",
+          "table_name": "users",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": false
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "health_checks",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "matches",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "merchants",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "moderations",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "notification_attempts",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "oauth_accounts",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "outbox_events",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "projects",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "revocations",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "sessions",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        },
+        {
+          "rolname": "postgres",
+          "table_name": "users",
+          "select": true,
+          "insert": true,
+          "update": true,
+          "delete": true,
+          "truncate": true
+        }
+      ],
+      "migrations": {
+        "history": [
+          {
+            "migration_name": "20260909000000_init",
+            "checksum": "2b6633284cd4fcf61955b803a93809cbc5b888d8ada0b5ea275f8cd600a7e3df",
+            "finished_at": "2026-09-10T23:54:21.240Z",
+            "rolled_back_at": null
+          }
+        ],
+        "local": [
+          {
+            "name": "20260909000000_init",
+            "checksumMatches": true
+          }
+        ]
+      },
+      "selectProbes": [
+        {
+          "table": "health_checks",
+          "ok": true
+        },
+        {
+          "table": "matches",
+          "ok": true
+        },
+        {
+          "table": "merchants",
+          "ok": true
+        },
+        {
+          "table": "moderations",
+          "ok": true
+        },
+        {
+          "table": "notification_attempts",
+          "ok": true
+        },
+        {
+          "table": "oauth_accounts",
+          "ok": true
+        },
+        {
+          "table": "outbox_events",
+          "ok": true
+        },
+        {
+          "table": "projects",
+          "ok": true
+        },
+        {
+          "table": "revocations",
+          "ok": true
+        },
+        {
+          "table": "sessions",
+          "ok": true
+        },
+        {
+          "table": "users",
+          "ok": true
+        }
+      ]
+    }
+  }
+}

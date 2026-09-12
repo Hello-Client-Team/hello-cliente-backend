@@ -1,0 +1,268 @@
+// Hello Cliente — PostgreSQL / Prisma ORM 7.
+// Aplicar também constraints.sql via migration, conforme README.md.
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  MERCHANT
+  DEVELOPER
+  ADMIN
+}
+
+enum OAuthProvider {
+  GITHUB
+  LINKEDIN
+}
+
+enum ProjectStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum ModerationDecision {
+  APPROVED
+  REJECTED
+}
+
+enum MatchStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum RevocationStatus {
+  PENDING_NOTIFICATION
+  AWAITING_DELETION
+  DECLARED_DELETED
+  OVERDUE
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  PUBLISHED
+  FAILED
+}
+
+enum HealthCheckResult {
+  SUCCESS
+  HTTP_ERROR
+  TIMEOUT
+  NETWORK_ERROR
+}
+
+model User {
+  signupTermsVersion    String?   @map("signup_terms_version") @db.VarChar(50)
+  signupTermsAcceptedAt DateTime? @map("signup_terms_accepted_at") @db.Timestamptz(3)
+  adminPasswordHash     String?   @map("admin_password_hash") @db.VarChar(60)
+  sessions              Session[]
+  id                    String    @id @default(uuid()) @db.Uuid
+  role                  UserRole
+  name                  String    @db.VarChar(150)
+  // Normalizar para lowercase antes de persistir; obrigatório para devs/admins.
+  email                 String?   @unique @db.VarChar(254)
+  emailVerifiedAt       DateTime? @map("email_verified_at") @db.Timestamptz(3)
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  merchant      Merchant?
+  oauthAccounts OAuthAccount[]
+  projects      Project[]      @relation("DeveloperProjects")
+  moderations   Moderation[]   @relation("AdminModerations")
+
+  @@map("users")
+}
+
+model Merchant {
+  userId             String    @id @map("user_id") @db.Uuid
+  whatsapp           String    @unique @db.VarChar(16)
+  passwordHash       String    @map("password_hash") @db.VarChar(60)
+  whatsappVerifiedAt DateTime? @map("whatsapp_verified_at") @db.Timestamptz(3)
+  businessName       String    @map("business_name") @db.VarChar(180)
+  businessSector     String    @map("business_sector") @db.VarChar(100)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  matches Match[]
+
+  @@map("merchants")
+}
+
+model OAuthAccount {
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  provider          OAuthProvider
+  providerAccountId String        @map("provider_account_id") @db.VarChar(255)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("oauth_accounts")
+}
+
+model Project {
+  healthLeaseUntil    DateTime?     @map("health_lease_until") @db.Timestamptz(3)
+  healthLeaseToken    String?       @map("health_lease_token") @db.VarChar(255)
+  id                  String        @id @default(uuid()) @db.Uuid
+  developerId         String        @map("developer_id") @db.Uuid
+  title               String        @db.VarChar(160)
+  category            String        @db.VarChar(100)
+  description         String        @db.Text
+  productionUrl       String        @map("production_url") @db.Text
+  demoUrl             String        @map("demo_url") @db.Text
+  status              ProjectStatus @default(PENDING)
+  consecutiveFailures Int           @default(0) @map("consecutive_failures")
+  lastHealthCheckAt   DateTime?     @map("last_health_check_at") @db.Timestamptz(3)
+  nextHealthCheckAt   DateTime?     @map("next_health_check_at") @db.Timestamptz(3)
+  suspendedAt         DateTime?     @map("suspended_at") @db.Timestamptz(3)
+  suspensionReason    String?       @map("suspension_reason") @db.Text
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  developer    User          @relation("DeveloperProjects", fields: [developerId], references: [id], onDelete: Restrict)
+  matches      Match[]
+  moderations  Moderation[]
+  healthChecks HealthCheck[]
+
+  @@index([developerId])
+  @@index([status, category])
+  @@index([status, nextHealthCheckAt])
+  @@map("projects")
+}
+
+model Moderation {
+  id              String             @id @default(uuid()) @db.Uuid
+  projectId       String             @map("project_id") @db.Uuid
+  administratorId String             @map("administrator_id") @db.Uuid
+  decision        ModerationDecision
+  justification   String?            @db.Text
+  createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  administrator User    @relation("AdminModerations", fields: [administratorId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, createdAt])
+  @@index([administratorId])
+  @@map("moderations")
+}
+
+model Match {
+  productionUrlSnapshot String      @map("production_url_snapshot") @db.Text
+  id                    String      @id @default(uuid()) @db.Uuid
+  merchantId            String      @map("merchant_id") @db.Uuid
+  projectId             String      @map("project_id") @db.Uuid
+  status                MatchStatus @default(ACTIVE)
+  termsVersion          String      @map("terms_version") @db.VarChar(50)
+  termsAcceptedAt       DateTime    @map("terms_accepted_at") @db.Timestamptz(3)
+  adoptedAt             DateTime    @default(now()) @map("adopted_at") @db.Timestamptz(3)
+  revokedAt             DateTime?   @map("revoked_at") @db.Timestamptz(3)
+
+  merchant   Merchant    @relation(fields: [merchantId], references: [userId], onDelete: Restrict)
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  revocation Revocation?
+
+  // Unicidade apenas para ACTIVE em constraints.sql. Não criar @@unique global:
+  // o histórico permite readotar após uma revogação, gerando outro Match.
+  @@index([merchantId, status])
+  @@index([projectId, status])
+  @@map("matches")
+}
+
+model Revocation {
+  notificationBody       String                @map("notification_body") @db.Text
+  notificationAttempts   NotificationAttempt[]
+  id                     String                @id @default(uuid()) @db.Uuid
+  matchId                String                @unique @map("match_id") @db.Uuid
+  status                 RevocationStatus      @default(PENDING_NOTIFICATION)
+  requestedAt            DateTime              @default(now()) @map("requested_at") @db.Timestamptz(3)
+  // Aceitação pelo provedor não significa entrega ou leitura pelo destinatário.
+  notificationAcceptedAt DateTime?             @map("notification_accepted_at") @db.Timestamptz(3)
+  deletionDeadlineAt     DateTime              @map("deletion_deadline_at") @db.Timestamptz(3)
+  // Declaração do dev; não comprova inspeção do banco externo.
+  deletionDeclaredAt     DateTime?             @map("deletion_declared_at") @db.Timestamptz(3)
+  recipientEmail         String                @map("recipient_email") @db.VarChar(254)
+  providerMessageId      String?               @map("provider_message_id") @db.VarChar(255)
+  notificationVersion    String                @map("notification_version") @db.VarChar(50)
+  evidenceReference      String?               @map("evidence_reference") @db.Text
+  updatedAt              DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  match  Match         @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  events OutboxEvent[]
+
+  @@index([status, deletionDeadlineAt])
+  @@map("revocations")
+}
+
+model OutboxEvent {
+  id            String       @id @default(uuid()) @db.Uuid
+  revocationId  String       @map("revocation_id") @db.Uuid
+  // Exemplo: merchant.revoked.v1. Deduplicar no consumidor usando id.
+  type          String       @db.VarChar(100)
+  payload       Json         @db.JsonB
+  status        OutboxStatus @default(PENDING)
+  attempts      Int          @default(0)
+  nextAttemptAt DateTime     @default(now()) @map("next_attempt_at") @db.Timestamptz(3)
+  lockedUntil   DateTime?    @map("locked_until") @db.Timestamptz(3)
+  lastError     String?      @map("last_error") @db.Text
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  publishedAt   DateTime?    @map("published_at") @db.Timestamptz(3)
+
+  revocation Revocation @relation(fields: [revocationId], references: [id], onDelete: Restrict)
+
+  @@unique([revocationId, type])
+  @@index([status, nextAttemptAt])
+  @@index([status, lockedUntil])
+  @@map("outbox_events")
+}
+
+model HealthCheck {
+  id         String            @id @default(uuid()) @db.Uuid
+  projectId  String            @map("project_id") @db.Uuid
+  checkedUrl String            @map("checked_url") @db.Text
+  result     HealthCheckResult
+  httpStatus Int?              @map("http_status")
+  durationMs Int               @map("duration_ms")
+  error      String?           @db.Text
+  checkedAt  DateTime          @default(now()) @map("checked_at") @db.Timestamptz(3)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, checkedAt])
+  @@map("health_checks")
+}
+
+model Session {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash") @db.VarChar(64)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model NotificationAttempt {
+  id           String     @id @default(uuid()) @db.Uuid
+  revocationId String     @map("revocation_id") @db.Uuid
+  startedAt    DateTime   @default(now()) @map("started_at") @db.Timestamptz(3)
+  acceptedAt   DateTime?  @map("accepted_at") @db.Timestamptz(3)
+  failureCode  String?    @map("failure_code") @db.VarChar(100)
+  messageId    String     @map("message_id") @db.VarChar(255)
+  revocation   Revocation @relation(fields: [revocationId], references: [id], onDelete: Restrict)
+
+  @@index([revocationId, startedAt])
+  @@map("notification_attempts")
+}
