@@ -110,8 +110,9 @@ export async function listMerchantMatches(
   merchantId: string,
   page: number,
   limit: number,
+  status?: "ACTIVE" | "REVOKED",
 ) {
-  const where = { merchantId };
+  const where = { merchantId, ...(status ? { status } : {}) };
   const [items, total] = await Promise.all([
     db.match.findMany({
       where,

@@ -1162,11 +1162,11 @@
     },
     "/merchant/matches": {
       "get": {
-        "summary": "Listar adoções e revogações do lojista",
+        "summary": "Listar adoções do lojista (ativas e revogadas)",
         "tags": [
           "Adoções"
         ],
-        "description": "Perfil obrigatório: MERCHANT. ",
+        "description": "Perfil obrigatório: MERCHANT. Use status=ACTIVE para o dashboard de sistemas em uso.",
         "security": [
           {
             "bearerAuth": []
@@ -1236,6 +1236,19 @@
               "minimum": 1,
               "maximum": 50,
               "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filtra por estado do match; sem o parâmetro, retorna todos.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "REVOKED"
+              ]
             }
           }
         ]
