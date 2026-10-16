@@ -16,9 +16,16 @@ export const matchController = {
     res.status(result.created ? 201 : 200).json({ data: result });
   },
   mine: async (req: Request, res: Response) => {
-    const { page, limit } = pagination.parse(req.query);
+    const { page, limit, status } = pagination
+      .extend({ status: z.enum(["ACTIVE", "REVOKED"]).optional() })
+      .parse(req.query);
     res.json({
-      data: await service.listMerchantMatches(req.actor!.id, page, limit),
+      data: await service.listMerchantMatches(
+        req.actor!.id,
+        page,
+        limit,
+        status,
+      ),
     });
   },
   revoke: async (req: Request, res: Response) => {

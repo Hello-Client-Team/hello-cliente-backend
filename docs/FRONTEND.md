@@ -54,7 +54,7 @@ pertencente a outra conta. Sessão expirada/revogada exige reiniciar a vinculaç
 | Detalhes          | GET /projects/{id}                                                           |
 | Cadastro          | POST /auth/register diretamente, sem código de verificação    |
 | Recuperação       | Indisponível por enquanto; ocultar a opção de recuperação |
-| Meus sistemas     | GET /merchant/matches                                                        |
+| Meus sistemas     | GET /merchant/matches (use ?status=ACTIVE para só os sistemas em uso)         |
 | Adotar            | POST /merchant/matches com projectId, termsVersion 1.0 e acceptTerms true    |
 | Revogar           | POST /merchant/matches/{id}/revoke com confirm true                          |
 | Meus projetos     | GET /developer/projects                                                      |
